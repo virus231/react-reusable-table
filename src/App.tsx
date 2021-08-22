@@ -1,24 +1,46 @@
 import React from 'react';
-import logo from './logo.svg';
+import useTable from "./hooks/useTable";
+import mockDate from './mockData';
+import {COLUMNS} from "./utils/constants";
 import './App.css';
 
+
 function App() {
-  return (
+    const {headers, rows, pagination: {nextPage, previousPage, pageNumber, totalPages}} =
+        useTable({columns: COLUMNS, data: mockDate, pagination: {pageSize: 2} })
+
+    console.log(rows)
+    const valueRow = rows.map((row: any) => row.map(({renderedValue}: any) => renderedValue))
+
+    return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <table>
+        <thead>
+            <tr>
+                {headers.map((header: any, index: number) => (
+                    <th key={index}>{header}</th>
+                ))}
+            </tr>
+        </thead>
+          <tbody>
+          {
+              valueRow.map((value: any, index: number) => (
+                  <tr key={index}>
+                      {value.map((row: any, index: number) => (
+                          <td key={index}>
+                              {row}
+                          </td>
+                      ))}
+                  </tr>
+              ))
+          }
+          </tbody>
+      </table>
+        <div className="pagination">
+            <button disabled={pageNumber == 1} onClick={previousPage}>&lt;</button>
+            <span>Page {pageNumber} of {totalPages}</span>
+            <button disabled={totalPages == pageNumber} onClick={nextPage}>&gt;</button>
+        </div>
     </div>
   );
 }
